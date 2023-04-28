@@ -1,0 +1,33 @@
+import numpy as np
+import time, os, sys
+from urllib.parse import urlparse
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+mpl.rcParams['figure.dpi'] = 300
+from cellpose import utils, io
+from cellpose import models
+
+
+# set folder path
+folder_path = '\\\\somfiles.som.umaryland.edu\\Liang_Drive\\imaging\\leica\\20230426_nanofast_summary\\test'
+
+# create a list of file paths， only tiff files
+files = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f)) and os.path.splitext(f)[1] == '.tif']
+
+
+# initialize model
+model = models.Cellpose(gpu=False, model_type='cyto')
+
+# set channels
+channels = [0,0] # IF YOU HAVE GRAYSCALE
+
+# process each file
+for filename in files:
+    img = io.imread(filename)
+    masks, flows, styles, diams = model.eval(img, diameter=None, channels=channels)
+
+    # save results so you can load in gui
+    #io.masks_flows_to_seg(img, masks, flows, diams, filename, channels)
+
+    # save results as png
+    io.save_to_png(img, masks, flows, filename)
