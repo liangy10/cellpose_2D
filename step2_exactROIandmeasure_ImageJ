@@ -1,0 +1,54 @@
+// Prompt user to input folder path
+path = getDirectory("Select a folder");
+
+
+// Get list of all files in folder
+list = getFileList(path);
+
+// Loop through files and select PNG files
+for (i = 0; i < list.length; i++) {
+    if (endsWith(list[i], ".png")) {
+        // Open the PNG file
+        open(path + list[i]);
+		fileNoExtension = File.nameWithoutExtension;
+        // Run "Label Images to ROI"
+        name = getTitle();
+        index = name.indexOf("_cp");
+		if (index >= 0) {
+    		firstPart = name.substring(0, index);
+		} else {
+    		print("Error: The file name does not contain '_cp'");
+    		exit();
+		}
+        
+        run("Label image to ROIs");
+
+     filePath=path;
+     
+		for (ii = 0; ii < list.length; ii++) {
+    		if (endsWith(list[ii], ".tif") && startsWith(list[ii], firstPart)) {
+        		filePath = filePath + list[ii];
+        		break;
+    		}
+		}
+		open(filePath);
+        // Select all ROIs
+        //roiManager("Select All");
+        
+        //print("name="+fileNoExtension);
+
+        // Save ROIs as an ROI file with the same name as the PNG file
+        //roiManager("Save", "//somfiles.som.umaryland.edu/Liang_Drive/imaging/leica/20230426_nanofast_summary/test/ROISET.zip")
+        roiManager("Save", path + fileNoExtension + ".zip");
+        roiManager("multi measure");
+        saveAs("Results", path + fileNoExtension + ".csv"); 
+
+        // Close the PNG file
+        close("*");
+    }
+}
+
+// Clean up
+resetThreshold();
+updateDisplay();
+
