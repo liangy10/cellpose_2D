@@ -1,0 +1,36 @@
+% Read the CSV file into a table
+filepath='\\somfiles.som.umaryland.edu\Liang_Drive\imaging\leica\20230426_nanofast_summary\processing_cellpose';
+csvFiles = dir(fullfile(filepath, '*.csv'));
+% Create an empty struct to hold the data
+% Create an empty structure to hold the data
+data = struct('green', {}, 'red', {}, 'ratio', {});
+
+% Loop through each CSV file and do something with it
+for i = 1:length(csvFiles)
+    % Get the filename of the CSV file
+    filename = fullfile(filepath, csvFiles(i).name);
+     % Get the column name of the numerical data
+    
+    filedata = readtable(filename);
+    % Extract the numerical data
+    Intensity = table2array(filedata(2:end,2:end));%the first column is channel number; the first row is bright field (2nd as red, 3rd as green)
+       
+    
+    greenData = Intensity(2,:);
+    redData = Intensity(1,:);
+    ratioData = Intensity(2,:)./Intensity(1,:);%ratio of green vs red
+    
+     % Add the data to the structure
+    data(i).green = greenData;
+    data(i).red = redData;
+    data(i).ratio = ratioData;
+    
+    % Add the file name to the structure
+    [~, name, ~] = fileparts(filename);
+    data(i).filename = name;
+    
+    
+end
+
+save(fullfile(filepath, 'summary_allwells.mat'), 'data');
+
