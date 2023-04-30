@@ -1,0 +1,32 @@
+
+%%
+%
+% Create a cell array to hold the ratio data for each row
+
+% Extract the filenames and ratio data into separate variables
+filenames = {data.filename}';
+ratioData = {data.ratio};
+
+
+
+% Create a cell array to hold the ratio data for each row
+maxLen = max(cellfun(@numel,ratioData));
+ratioCell = cell(numel(ratioData), 1);
+
+for i = 1:numel(ratioData)
+    len = numel(ratioData{i});
+    if len == maxLen
+        ratioCell{i} = ratioData{i};
+    else
+        ratioCell{i} = [ratioData{i} NaN(1, maxLen-len)];
+    end
+end
+
+% Plot a box plot for each row of ratio data
+figure;
+xx=cell2mat(ratioCell);
+boxplot(xx', 'Labels', filenames');
+xlabel('X Axis Label', 'FontSize', 0.5);
+xlabel('Filename');
+ylabel('Ratio');
+title('Ratio Data Box Plots');
