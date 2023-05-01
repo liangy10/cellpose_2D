@@ -1,0 +1,15 @@
+A = randn(5, 7);
+
+% Calculate the top 25% threshold for each row
+thresholds = prctile(A, 75, 2);
+
+% Extract values greater than or equal to the threshold
+top_values = A >= thresholds;
+A(top_values == 0) = NaN;
+
+% Calculate the mean of the top 25% values for each row
+
+restvalue=A .* top_values;
+
+mean1=median(restvalue,2,"omitnan");
+
